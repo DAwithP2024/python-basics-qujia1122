@@ -53,12 +53,12 @@ def add_to_cart(cart, product, quantity):
 #         print("Your cart is empty.")
 #     else:
 #         total_cost = 0
-#         for product, quantity in cart:
-#             product_name, product_price = product
+#         for product_info in cart:
+#             product_name, product_price, quantity = product_info  # 正确解包三元组
 #             total_cost += product_price * quantity
 #         print("Items in your cart:")
-#         for product, quantity in cart:
-#             product_name, product_price = product
+#         for product_info in cart:
+#             product_name, product_price, quantity = product_info  # 正确解包三元组
 #             print(f"{product_name} - Quantity: {quantity} - Total: ${product_price * quantity}")
 #         print(f"Total cost: ${total_cost}")
 def display_cart(cart):
@@ -66,13 +66,11 @@ def display_cart(cart):
         print("Your cart is empty.")
     else:
         total_cost = 0
-        for product, quantity in cart:
-            product_name, product_price = product
-            total_cost += product_price * quantity
         print("Items in your cart:")
-        for product, quantity in cart:
-            product_name, product_price = product
-            print(f"{product_name} - Quantity: {quantity} - Total: ${product_price * quantity}")
+        for product_info in cart:
+            product_name, product_price, quantity = product_info
+            total_cost += product_price * quantity
+            print(f"{product_name} - ${product_price} x {quantity} = ${product_price * quantity}")
         print(f"Total cost: ${total_cost}")
 
 def generate_receipt(name, email, cart, total_cost, address):
@@ -106,10 +104,16 @@ def main():
 
     while True:
         display_categories()
-        category_choice = input(
-            "Please enter the number of the category you would like to explore or 4 to exit shopping: ")
+        category_choice = input("Please enter the number of the category you would like to explore or 4 to exit shopping: ")
         if category_choice.isdigit():
             if int(category_choice) == 4:
+                address = input("Please enter your delivery address: ")
+                if cart:
+                    total_cost = 0
+                    for product_info in cart:
+                        product_name, product_price, quantity = product_info
+                        total_cost += product_price * quantity
+                    generate_receipt(name, email, cart, total_cost, address)
                 print("Thank you for using our portal. Have a nice day.")
                 break
             elif 1 <= int(category_choice) <= len(products):
@@ -138,16 +142,13 @@ def main():
                         break
                     elif product_choice == "4":
                         address = input("Please enter your delivery address: ")
-                        if cart:
-                         total_cost = 0
-                         for product, quantity in cart:
-                            product_name, product_price = product
-                            total_cost += product_price * quantity  # 正确计算总成本
-                         generate_receipt(name, email, cart, total_cost, address)
-                         print("Thank you for using our portal.Have a nice day.")
-                         break
-                        else:
-                            print("Thank you for using our portal.Have a nice day.")
+                        total_cost = 0
+                        for product_info in cart:
+                            product_name, product_price, quantity = product_info
+                            total_cost += product_price * quantity
+                        generate_receipt(name, email, cart, total_cost, address)
+                        print("Thank you for using our portal. Have a nice day.")
+                        break
                     else:
                         print("Invalid option. Please try again.")
             else:
