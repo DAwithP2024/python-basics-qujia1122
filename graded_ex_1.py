@@ -30,7 +30,6 @@ products = {
     ]
 }
 
-
 def display_sorted_products(products_list, sort_order):
     sorted_list = sorted(products_list, key=lambda x: x[1], reverse=sort_order == 'desc')
     return sorted_list
@@ -46,21 +45,44 @@ def display_categories():
 def add_to_cart(cart, product, quantity):
     cart.append((product, quantity))
 
+# def display_cart(cart):
+#     if not cart:
+#         print("Your cart is empty.")
+#     else:
+#         total_cost = sum(price * quantity for _, quantity in cart for product, price in cart if product == _)
+#         print("Items in your cart:")
+#         for product, quantity in cart:
+#             print(f"{product} - Quantity: {quantity}")
+#         print(f"Total cost: ${total_cost}")
 def display_cart(cart):
     if not cart:
         print("Your cart is empty.")
     else:
-        total_cost = sum(price * quantity for _, quantity in cart for product, price in cart if product == _)
+        total_cost = 0
+        for product, quantity in cart:
+            product_name, product_price = product
+            total_cost += product_price * quantity
         print("Items in your cart:")
         for product, quantity in cart:
-            print(f"{product} - Quantity: {quantity}")
+            product_name, product_price = product
+            print(f"{product_name} - Quantity: {quantity} - Total: ${product_price * quantity}")
         print(f"Total cost: ${total_cost}")
 
+
+# def generate_receipt(name, email, cart, total_cost, address):
+#     print(f"Receipt for {name}, {email}")
+#     print(f"Items ordered:")
+#     for product, quantity in cart:
+#         print(f"{product} x {quantity}")
+#     print(f"Total cost: ${total_cost}")
+#     print(f"Delivery address: {address}")
+#     print("Your items will be delivered in 3 days. Payment will be accepted after successful delivery.")
 def generate_receipt(name, email, cart, total_cost, address):
     print(f"Receipt for {name}, {email}")
     print(f"Items ordered:")
     for product, quantity in cart:
-        print(f"{product} x {quantity}")
+        product_name, product_price = product
+        print(f"{product_name} - ${product_price} x {quantity}")
     print(f"Total cost: ${total_cost}")
     print(f"Delivery address: {address}")
     print("Your items will be delivered in 3 days. Payment will be accepted after successful delivery.")
@@ -84,13 +106,16 @@ def main():
         print("Invalid email address. Please include an @ sign.")
         email = input("Please enter your email address: ")
 
-    display_categories()
     while True:
-        category_choice = input("Please enter the number of the category you would like to explore: ")
+        display_categories()
+        category_choice = input(
+            "Please enter the number of the category you would like to explore or 4 to exit shopping: ")
         if category_choice.isdigit():
-            category_choice = int(category_choice)
-            if 1 <= category_choice <= len(products):
-                selected_category = list(products.keys())[category_choice - 1]
+            if int(category_choice) == 4:
+                print("Thank you for using our portal. Have a nice day.")
+                break
+            elif 1 <= int(category_choice) <= len(products):
+                selected_category = list(products.keys())[int(category_choice) - 1]
                 products_list = products[selected_category]
                 display_products(products_list)
 
@@ -116,18 +141,21 @@ def main():
                     elif product_choice == "4":
                         address = input("Please enter your delivery address: ")
                         if cart:
-                            total_cost = sum(price * quantity for product, quantity in cart)
-                            generate_receipt(name, email, cart, total_cost, address)
+                         total_cost = 0  
+                         for product, quantity in cart:
+                            product_name, product_price = product
+                            total_cost += product_price * quantity  # 正确计算总成本
+                         generate_receipt(name, email, cart, total_cost, address)
+                         print("Thank you for using our portal.Have a nice day.")
+                         break
                         else:
-                            print("Thank you for using our portal. Hope you buy something from us next time. Have a nice day.")
-                        break
+                            print("Thank you for using our portal.Have a nice day.")
                     else:
                         print("Invalid option. Please try again.")
             else:
                 print("Invalid category selection. Please try again.")
         else:
             print("Invalid input. Please enter a number.")
-    
 
 """ The following block makes sure that the main() function is called when the program is run. 
 It also checks that this is the module that's being run directly, and not being used as a module in some other program. 
