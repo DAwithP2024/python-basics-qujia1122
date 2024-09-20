@@ -32,35 +32,29 @@ products = {
 
 
 def display_sorted_products(products_list, sort_order):
-     sorted_list = sorted(products_list, key=lambda x: x[1], reverse=sort_order == 'desc')
+    sorted_list = sorted(products_list, key=lambda x: x[1], reverse=sort_order == 'desc')
     return sorted_list
 
-
 def display_products(products_list):
-        for index, (product, price) in enumerate(products_list, start=1):
+    for index, (product, price) in enumerate(products_list, start=1):
         print(f"{index}. {product} - ${price}")
 
-
 def display_categories():
-        for index, category in enumerate(products.keys(), start=1):
+    for index, category in enumerate(products.keys(), start=1):
         print(f"{index}. {category}")
-
 
 def add_to_cart(cart, product, quantity):
     cart.append((product, quantity))
 
 def display_cart(cart):
-        if not cart:
+    if not cart:
         print("Your cart is empty.")
     else:
-        total_cost = 0
-        for product, price, quantity in cart:  # 修改这里以正确解包
-            total_cost += price * quantity
+        total_cost = sum(price * quantity for _, quantity in cart for product, price in cart if product == _)
         print("Items in your cart:")
-        for product, price, quantity in cart:  # 修改这里以正确显示
-            print(f"{product} - ${price} x {quantity} = ${price * quantity}")
+        for product, quantity in cart:
+            print(f"{product} - Quantity: {quantity}")
         print(f"Total cost: ${total_cost}")
-
 
 def generate_receipt(name, email, cart, total_cost, address):
     print(f"Receipt for {name}, {email}")
@@ -71,7 +65,6 @@ def generate_receipt(name, email, cart, total_cost, address):
     print(f"Delivery address: {address}")
     print("Your items will be delivered in 3 days. Payment will be accepted after successful delivery.")
 
-
 def validate_name(name):
     parts = name.split()
     return len(parts) == 2 and all(part.isalpha() for part in parts)
@@ -79,8 +72,8 @@ def validate_name(name):
 def validate_email(email):
     return "@" in email
 
-
 def main():
+    cart = []  # 初始化购物车
     name = input("Please enter your name: ")
     while not validate_name(name):
         print("Invalid name. Please enter your first and last name using only letters.")
@@ -109,21 +102,21 @@ def main():
                                 product_number = int(input("Enter the number of the product you want to buy: "))
                                 product, price = products_list[product_number - 1]
                                 quantity = int(input("Enter the quantity: "))
-                                add_to_cart(cart, product, quantity)
+                                add_to_cart(cart, (product, price), quantity)
                                 break
                             except (ValueError, IndexError):
                                 print("Invalid product number or quantity. Please try again.")
                     elif product_choice == "2":
                         sort_order = input("Enter 1 for ascending or 2 for descending order: ")
+                        sort_order = 'asc' if sort_order == '1' else 'desc'
                         sorted_products = display_sorted_products(products_list, sort_order)
                         display_products(sorted_products)
                     elif product_choice == "3":
                         break
                     elif product_choice == "4":
-                        cart = []
                         address = input("Please enter your delivery address: ")
                         if cart:
-                            total_cost = sum(price * quantity for _, quantity in cart for product, price in products_list if product == _)
+                            total_cost = sum(price * quantity for product, quantity in cart)
                             generate_receipt(name, email, cart, total_cost, address)
                         else:
                             print("Thank you for using our portal. Hope you buy something from us next time. Have a nice day.")
