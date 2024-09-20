@@ -42,17 +42,24 @@ def display_categories():
     for index, category in enumerate(products.keys(), start=1):
         print(f"{index}. {category}")
 
+# def add_to_cart(cart, product, quantity):
+#     cart.append((product, quantity))
 def add_to_cart(cart, product, quantity):
-    cart.append((product, quantity))
+    cart.append((product + (quantity,)) if isinstance(product, tuple) else (product, quantity))
+
 
 # def display_cart(cart):
 #     if not cart:
 #         print("Your cart is empty.")
 #     else:
-#         total_cost = sum(price * quantity for _, quantity in cart for product, price in cart if product == _)
+#         total_cost = 0
+#         for product, quantity in cart:
+#             product_name, product_price = product
+#             total_cost += product_price * quantity
 #         print("Items in your cart:")
 #         for product, quantity in cart:
-#             print(f"{product} - Quantity: {quantity}")
+#             product_name, product_price = product
+#             print(f"{product_name} - Quantity: {quantity} - Total: ${product_price * quantity}")
 #         print(f"Total cost: ${total_cost}")
 def display_cart(cart):
     if not cart:
@@ -68,15 +75,6 @@ def display_cart(cart):
             print(f"{product_name} - Quantity: {quantity} - Total: ${product_price * quantity}")
         print(f"Total cost: ${total_cost}")
 
-
-# def generate_receipt(name, email, cart, total_cost, address):
-#     print(f"Receipt for {name}, {email}")
-#     print(f"Items ordered:")
-#     for product, quantity in cart:
-#         print(f"{product} x {quantity}")
-#     print(f"Total cost: ${total_cost}")
-#     print(f"Delivery address: {address}")
-#     print("Your items will be delivered in 3 days. Payment will be accepted after successful delivery.")
 def generate_receipt(name, email, cart, total_cost, address):
     print(f"Receipt for {name}, {email}")
     print(f"Items ordered:")
@@ -141,7 +139,7 @@ def main():
                     elif product_choice == "4":
                         address = input("Please enter your delivery address: ")
                         if cart:
-                         total_cost = 0  
+                         total_cost = 0
                          for product, quantity in cart:
                             product_name, product_price = product
                             total_cost += product_price * quantity  # 正确计算总成本
